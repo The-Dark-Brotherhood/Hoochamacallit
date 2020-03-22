@@ -81,7 +81,7 @@ int main(int argc, char const *argv[])
   {
     // Process messages if received AND if it is able to add client or it already exists in shList
     if(msgrcv(msgID, &msg, msgSize, 0, IPC_NOWAIT) != -1 &&
-      (retcode = insertNodeToList(shList, createClient(msg.clientId))))
+      (retcode = insertNodeToList(shList, createClient(msg.clientId))) != -1)
     {
       // I dont error check findClient because the check above already guarantees
       // that a client with that Id exists
