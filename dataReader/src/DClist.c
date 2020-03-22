@@ -103,7 +103,7 @@ void checkInactivity(MasterList* list)
       {
         list->dc[counter] = list->dc[lastIndex];
       }
-      list->dc[index].dcProcessID = 0;
+      list->dc[counter].dcProcessID = 0;
       list->numberOfDCs--;
 		}
     else
