@@ -25,6 +25,8 @@
 #define MESSAGE_LENGTH  100
 #define MACHINE_ON      1
 #define EVERYTHING_OKAY 0
+#define MIN_SLEEP       10
+#define MAX_SLEEP       30
 
 // Structures
 //--> Message QUEUE

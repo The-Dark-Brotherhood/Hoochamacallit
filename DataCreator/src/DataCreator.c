@@ -1,16 +1,24 @@
+/*
+*  FILE          : DataCreator.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel, Michael Gordon
+*  FIRST VERSION : 2020-03-5
+*  DESCRIPTION   : Contains the functionality for the DataCreator. This application is
+*                  responsible for sending messages to the message queue. It will only
+*                  send messages once it has detected the existance of the queue. The
+*                  data creator will first send a message status of 0, then wait before
+*                  sending more messages. The status will be a value between 0 & 6. At This
+*                  point, the dataCreator will exit
+*/
 #include "../inc/DataCreator.h"
 
 int main(int argc, char* argv)
 {
 
-  //set up the semaphore
-  int semId = setUpLogSemaphore();
   //get the queue Id
   int qID = getQueueID();
   machineProcessingLoop(qID);
 
-  //release the semaphore once operation is finished
-  closeLogSemaphore(semId);
   return 0;
 }
 
@@ -32,7 +40,7 @@ int getQueueID(void)
   //then searching again
   while((qID = msgget(msgKey,0)) < 0)
   {
-    sleep(10);
+    sleep(SLEEP_TIME);
   }
 
   return qID;
@@ -90,15 +98,15 @@ void machineProcessingLoop(int msgQueueID)
   while(running)
   {
     //sleep random amount of time
-    sleep((rand() % 21)+10); //sleep between 10 & 30 seconds
+    sleep((rand() % (MAX_SLEEP + 1)) + MIN_SLEEP); //sleep between 10 & 30 seconds
 
     //generate random value between 0 & 6
-    int machineStatus = ((rand()%7));
+    int machineStatus = (rand() % (MAX_STATUSES + 1));
     //send the message to the message queue - logging called in sendMessage()
     sendMessage(machineStatus, pid, 1, msgQueueID);
 
     //Machine status = "Machine is Off-Line"
-    if (machineStatus == 6)
+    if (machineStatus == MACHINE_OFF)
     {
       running = false;
     }
