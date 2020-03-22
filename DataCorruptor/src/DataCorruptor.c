@@ -1,19 +1,34 @@
+/*
+*  FILE          : DataCorruptor.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel, Michael Gordon
+*  FIRST VERSION : 2020-03-16
+*  DESCRIPTION   : Contains the functionality for the DataCorruptor - the application
+*                  responsible for giving the DataReader and DataCreator a really hard time
+*                  The DataCorruptor attaches to the shared memory and randomly selects an
+*                  action from the WHEEL OF DEATH. Possible actions include -> killing a DC
+*                  process, killing the message queue, and doing nothing. When the Data corruptor
+*                  detects that the message queue is gone, it will exit.
+*/
+
 #include "../inc/DataCorruptor.h"
 
 
 int main(int argc, char* argv)
 {
   //to get the key
-  key_t shmKey = ftok(".", 16535);
+  key_t shmKey = ftok(SHMKEY_PATH, SHM_KEYID);
   int shmID = 0;
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < MAX_SHMEM_TRIES; i++)
   {
     // Grabs the shared memory ID
-    if(shmID = shmget(shmKey, sizeof(MasterList), 0) != -1)
+    shmID = shmget(shmKey, sizeof(MasterList), 0);
+    if(shmID != -1)
     {
       break;
+
     }
-    sleep(10);
+    sleep(SHMEM_TRY_SLEEP);
   }
 
   // Share mem not found after number tries
@@ -25,10 +40,10 @@ int main(int argc, char* argv)
   MasterList* shList = NULL;
   if((shList = attachToSharedMemory(shmID)) == NULL)
   {
-    //unable to attach to shared memory
+    //unable to attach to shared memory if null
     return 2;
   }
-  corrupterProcessing(shList);
+  corrupterProcessing(shList, shmKey);
 
   return 0;
 }
@@ -46,10 +61,8 @@ int main(int argc, char* argv)
 MasterList* attachToSharedMemory(int shmID)
 {
   MasterList* shList = (MasterList*)shmat (shmID, NULL, 0); // Grabs the shared memory
-  if(shList == NULL)
-  {
-    printf("Cannot attach to shared memory\n");
-  }
+
+  //returns null if unable to attach to shared memory
 
   return shList;
 }
@@ -65,17 +78,27 @@ MasterList* attachToSharedMemory(int shmID)
 //
 // PARAMETERS    :
 //    MasterList* shList : Pointer to the shared memory master list
+//    key_t shmKey       : key for shared memory. Used to check existance of shared memory
 //
 // RETURNS       : none
-void corrupterProcessing(MasterList* shList)
+void corrupterProcessing(MasterList* shList, key_t shmKey)
 {
   int running = 1;
   while(running)
   {
     //Step 1: sleep for 10-30 seconds
     srand(time(0));
-    sleep((rand() % 21)+10);
+    sleep((rand() % (MAX_SLEEP - 9))+ MIN_SLEEP);
     //Step 2: Check for existance of message queue
+    int shmID = -1;
+    //reader closes message queue and shared memory when shutting down
+    shmID = shmget(shmKey, sizeof(MasterList), 0);
+    if(shmID < 0)
+    {
+      //write to log
+      writeMsgQueueGoneToLog();
+      break;
+    }
     //Step 3: Select and action from WOD
     int randomAction = spinTheWheelOfDestruction();
     //Step 4: Execute Action
@@ -98,7 +121,7 @@ void corrupterProcessing(MasterList* shList)
 int spinTheWheelOfDestruction(void)
 {
   //Get a value between 0-20
-  int randomAction = ((rand()%21));
+  int randomAction = ((rand() % (NUM_WOD_ACTIONS + 1)));
   return randomAction;
 }
 
@@ -114,27 +137,22 @@ int spinTheWheelOfDestruction(void)
 //    0 if the process was not killed (already was closed)
 int killTheThing(MasterList* list, int index)
 {
-
-  printf("Kill the thing\n");
   int retCode = 0;
   if(index > (list->numberOfDCs) - 1)
   {
-    printf("index doesn't exist\n");
     retCode = -1;
     return retCode;
     //client doesn't exist
   }
   int pidToKill = list->dc[index].dcProcessID;
-    printf("Trying to kill %d", pidToKill);
     retCode = kill(pidToKill, SIGHUP);
     if(retCode == 0)
     {
       retCode = pidToKill;
-      printf("success\n");
     }
-    else // Client already dead
+    else
     {
-      printf("already closed\n");
+      // Client already dead - failed to kill
     }
 
   return retCode;
@@ -160,17 +178,18 @@ int executeAction(MasterList* list, int action)
   {
     //do Nothing
     writeDidNothingToLog(action);
-
   }
   else if(action == 10 || action == 17)
   {
     //delete message queue, get success to see if successful in deleting queue
     if(msgctl (list->msgQueueID, IPC_RMID, (struct msqid_ds*)NULL) == -1)
     {
+      //failed to delete
       success = -1;
     }
     else
     {
+      //successfully deleted the message queue
       success = 1;
     }
     writeMsgQueueDeleteToLog(action, success);
@@ -222,9 +241,9 @@ int executeAction(MasterList* list, int action)
         dcNumber = 10;
         break;
     }
-    int retCode = killTheThing(list,dcNumber);
+    int retCode = killTheThing(list,dcNumber - 1);//-1 to match zero based index
     int successfulKill = 0;
-    if(retCode >= 0)
+    if(retCode <= 0)
     {
       //failed to delete
       successfulKill = 0;

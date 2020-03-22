@@ -1,3 +1,14 @@
+/*
+*  FILE          : DCrrpOutput.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel, Michael Gordon
+*  FIRST VERSION : 2020-03-16
+*  DESCRIPTION   : Contains the functionality for the DataCorruptor logging. The DataCorruptor
+*                  logs each action it takes, as well as when the message queue is deleted. when
+*                  it attempts to kill a process, it will log whether it was a success or failure,
+*                  due to the process not existing any more
+*/
+
 #include "../inc/DataCorruptor.h"
 
 
@@ -20,7 +31,7 @@ void writeDCKillToLog(int wodAction, int success, int id, int DCNum)
   }
   else
   {
-    sprintf(logMessage, "WOD Action %d - DC-%02d [%d] FAILED - Data Creator with that PID does not exist\n", wodAction, DCNum, id);
+    sprintf(logMessage, "WOD Action %d - DC-%02d FAILED - That Data Creator Doesn't Exist\n", wodAction, DCNum);
   }
 
   // Write to log file
@@ -40,11 +51,11 @@ void writeMsgQueueDeleteToLog(int wodAction, int success)
   char logMessage[DCRRP_LOG_LEN] = "";
 
   sprintf(logMessage, "WOD Action %d - Delete the Message Queue\n", wodAction);
-  if(success)
+  if(success) //successfully deleted the message queue
   {
     strcat(logMessage, "DX deleted the msgQ – the DR/DCs can’t talk anymore - exiting\n");
   }
-  else
+  else  //failed to delete the message queue
   {
     strcat(logMessage, "DX unable to delete the msgQ – assuming doesn't exist any more - exiting\n");
   }

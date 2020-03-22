@@ -1,25 +1,38 @@
 /*
-*  FILE          : linkedList.cpp
+*  FILE          : DClist.c
 *  PROJECT       : Assignment #3
-*  PROGRAMMER    : Gabriel Gurgel
-*  FIRST VERSION : 2019-06-10
-*  DESCRIPTION   : Modified version of the Data Structures Assignment #1 linked list code...cool, right?
-*                  This file contains the definitions for the functionsto linked list implementations
+*  PROGRAMMER    : Gabriel Gurgel & Michael Gordon
+*  FIRST VERSION : 2020-03-20
+*  DESCRIPTION   : Contains the function related to managing the client list
+*                  in the MasterList
 */
 #include "../inc/dataReader.h"
 
+// FUNCTION      : createClient
+// DESCRIPTION   : Creates client with its process ID
+//
+// PARAMETERS    :
+//   pid_t  id : Process Id of the client
+//
+//  RETURNS      :
+//   Return the client
+DCInfo createClient(pid_t id)
+{
+  DCInfo client = {.dcProcessID = id, .lastTimeHeardFrom = time(NULL)};
+  return client;
+}
 
 // FUNCTION      : insertNodeToList
-// DESCRIPTION   : Insert a node in a ascending client ID order or Updates there
+// DESCRIPTION   : Insert a client shared Master List or it resets the lastTimeHeardFrom of
 //								 existing client timer
 //
 // PARAMETERS    :
 //	MasterList* list : List containing information about all server clients
-//  DCInfo*  node   : Pointer to the node that is being inserted
+//  DCInfo    client : Client that is going to be inserted
 //
 // RETURNS       :
-//	Returns a pointer to the node if it was added or already existed,
-//  NULL if the server is full
+//	Returns 1 if the client is added, 2 if the client already exists, and
+//  -1 if the list is full
 int insertNodeToList(MasterList* list, DCInfo client)
 {
   // Check if the client is already on the list
@@ -46,6 +59,15 @@ int insertNodeToList(MasterList* list, DCInfo client)
   return 1;
 }
 
+// FUNCTION      : findClient
+// DESCRIPTION   : Finds the client index based on its pid
+//
+// PARAMETERS    :
+//	MasterList* list : List containing information about all server clients
+//  pid_t       id   : Process ID of the client
+//
+// RETURNS       :
+// Return the index of the client in the masterlist
 int findClient(MasterList* list, pid_t id)
 {
   for(int counter = 0; counter < list->numberOfDCs; counter++)
@@ -92,14 +114,14 @@ void checkInactivity(MasterList* list)
 
 
 // FUNCTION      : deleteNode
-// DESCRIPTION   : Deletes a particular node from a list
+// DESCRIPTION   : Deletes a particular client from a list
 //
 // PARAMETERS    :
 //	MasterList* list : Pointer to the shared memory master list
 //	int index      : Index of the client that is going to be deleteds
 //
 // RETURNS       :
-//	NOTHING
+//	void
 void deleteNode(MasterList* list, int index)
 {
   list->dc[index].dcProcessID = 0;

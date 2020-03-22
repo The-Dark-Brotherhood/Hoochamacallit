@@ -1,3 +1,15 @@
+/*
+*  FILE          : DCOutput.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel, Michael Gordon
+*  FIRST VERSION : 2020-03-5
+*  DESCRIPTION   : Contains the functionality for logging for the dataCreator
+*                  Every time a message is sent, the datacreator will write to
+*                  log file. Because there may be multiple processes writing to the
+*                  file, a semaphore is used for acccess to the file. The semaphore
+*                  is created by the dataReader.
+*/
+
 #include "../inc/DataCreator.h"
 
 // DEBUG: Should this be here?
@@ -17,7 +29,7 @@ unsigned short init_values[1] = { 1 };
 //  RETURNS      : void
 void createLogMessage(int pid, int status)
 {
-  // Get the semaphore ID, create if it doesn't exist
+  // Get the semaphore ID -> the dataReader creates the semaphore on startup
   int semid = semget (KEY, 1, IPC_CREAT | 0777);
 
   // Get the description of the status - values 0-6
@@ -25,29 +37,29 @@ void createLogMessage(int pid, int status)
   switch(status)
   {
     case 0:
-      strcpy(description, "Everything is OKAY");
+      strcpy(description, MSG_0);
       break;
     case 1:
-      strcpy(description, "Hydraulic Pressure Failure");
+      strcpy(description, MSG_1);
       break;
     case 2:
-      strcpy(description, "Safety Button Failure");
+      strcpy(description, MSG_2);
       break;
     case 3:
-      strcpy(description, "No Raw Material in the Process");
+      strcpy(description, MSG_3);
       break;
     case 4:
-      strcpy(description, "Operating Temperature Out of Range");
+      strcpy(description, MSG_4);
       break;
     case 5:
-      strcpy(description, "Operator Error");
+      strcpy(description, MSG_5);
       break;
     case 6:
-      strcpy(description, "Machine is Off-line");
+      strcpy(description, MSG_6);
       break;
     default:
       // There should only be a value between 0-6
-      strcpy(description, "ERROR READING STATUS");
+      strcpy(description, MSG_ERROR);
       break;
   }
 

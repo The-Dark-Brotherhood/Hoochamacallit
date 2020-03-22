@@ -1,10 +1,15 @@
+/*
+*  FILE          : dataReader.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel & Michael Gordon
+*  FIRST VERSION : 2020-03-21
+*  DESCRIPTION   : DataReader Application, The Server of the Hoochamacallit system
+*                  Creates the semaphores to the client apps, creates the message queue
+*                  and the shared memory section
+*/
+
 #include "../inc/dataReader.h"
 
-// DEBUG: REMOVE ALL PRINTF
-// DEBUG: REMOVE THE DEBUGGER FLAG
-DCInfo createClient(pid_t id);
-int setUpLogSemaphore(void);
-void closeLogSemaphore(int semId);
 
 struct sembuf acquire_operation = { 0, -1, SEM_UNDO };
 struct sembuf release_operation = { 0, 1, SEM_UNDO };
@@ -12,6 +17,8 @@ unsigned short init_values[1] = { 1 };
 
 int main(int argc, char const *argv[])
 {
+  int semId = setUpLogSemaphore();
+
   // MESSAGE QUEUE;
   // Generate key
   key_t msgKey = ftok(KEY_PATH, 'G');
@@ -34,7 +41,6 @@ int main(int argc, char const *argv[])
       return errno;
     }
   }
-  printf("DEBUG MESSAGE ID: %d\n", msgID );
 
   // MASTER LIST;
   // Generattes key
@@ -58,14 +64,6 @@ int main(int argc, char const *argv[])
       return errno;
     }
   }
-  printf("DEBUG SHM ID: %d\n", shmID);
-
-  /*
-  //DEBUG: Clean up
-  msgctl (msgID, IPC_RMID, (struct msqid_ds*)NULL);
-  shmdt(shList);
-  shmctl (shmID, IPC_RMID, 0);
-  */
 
   //--> Listening loop
   shList = (MasterList*)shmat (shmID, NULL, 0);       // Grabs the shared memory and
@@ -77,8 +75,8 @@ int main(int argc, char const *argv[])
   msgData msg;
   int msgSize = sizeof(msgData) - sizeof(long);
 
-  time_t startTime = time(NULL);                      // Listen for messages loop
-  while((int)difftime(time(NULL), startTime) < EXIT_DELAY)
+  time_t startTime = time(NULL); // Listen for messages loop
+  while((int)difftime(time(NULL), startTime) < CLOSE_DELAY)
   {
     // Process messages if received AND if it is able to add client or it already exists in shList
     if(msgrcv(msgID, &msg, msgSize, 0, IPC_NOWAIT) != -1 &&
@@ -89,12 +87,12 @@ int main(int argc, char const *argv[])
       checkInactivity(shList);
       int currentClient = findClient(shList, msg.clientId);
 
-      if(msg.msgStatus == EXIT_CODE)
+      if(msg.msgStatus == EXIT_CODE)        // Remove client
       {
         deleteNode(shList, currentClient);
         createLogMessage(shList->dc[currentClient], GO_OFFLINE, currentClient, 0);
       }
-      else
+      else                                 // Log message
       {
         createLogMessage(shList->dc[shList->numberOfDCs], MESSAGE, shList->numberOfDCs, msg.msgStatus);
       }
@@ -109,7 +107,8 @@ int main(int argc, char const *argv[])
   debugLog("All DCs have gone offline or terminated – DR TERMINATING\n");
   msgctl (msgID, IPC_RMID, (struct msqid_ds*)NULL);
   shmdt(shList);
-  shmctl (shmID, IPC_RMID, 0);
+  shmctl(shmID, IPC_RMID, 0);
+  closeLogSemaphore(semId);
 
   return 0;
 }
@@ -126,7 +125,7 @@ int setUpLogSemaphore(void)
   int semid = semget (KEY, 1, IPC_CREAT | 0777);
   if (semctl (semid, 0, SETALL, init_values) == -1)
   {
-    printf("error\n");
+    debugLog("Error setting up the Semephore\n");
   }
   return semid;
 }
@@ -139,12 +138,5 @@ int setUpLogSemaphore(void)
 //  RETURNS      : none
 void closeLogSemaphore(int semId)
 {
-  semctl (semId, 0, IPC_RMID, 0);
-
-}
-
-DCInfo createClient(pid_t id)
-{
-  DCInfo client = {.dcProcessID = id, .lastTimeHeardFrom = time(NULL)};
-  return client;
+  semctl(semId, 0, IPC_RMID, 0);
 }
