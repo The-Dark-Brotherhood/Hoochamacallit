@@ -1,3 +1,11 @@
+/*
+*  FILE          : Hoochamacallit.h
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel & Michael Gordon
+*  FIRST VERSION : 2020-03-21
+*  DESCRIPTION   : Shared constants, includes, and structures for the Hoochamacallit system
+*/
+
 #pragma once
 #include "../inc/logger.h"
 #include <stdio.h>
@@ -16,12 +24,12 @@
 #include <sys/stat.h>
 
 // Constants
-#define SHMKEY_PATH  "."
-#define KEY_PATH     "/tmp/"
-#define ID_ERROR      -1
-#define SHM_KEYID     16535
-#define EXIT_CODE     6
-#define KEY           1337
+#define SHMKEY_PATH     "."
+#define KEY_PATH        "/tmp/"
+#define ID_ERROR        -1
+#define SHM_KEYID       16535
+#define EXIT_CODE       6
+#define KEY             1337
 #define MESSAGE_LENGTH  100
 #define MACHINE_ON      1
 #define EVERYTHING_OKAY 0

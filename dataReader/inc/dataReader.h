@@ -1,11 +1,20 @@
+/*
+*  FILE          : dataReader.h
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel & Michael Gordon
+*  FIRST VERSION : 2020-03-21
+*  DESCRIPTION   : Shared constants, includes, and structures for the DataReader program
+*/
+
 #pragma once
 #include "../../Common/inc/Hoochamacallit.h"
 
 // Constants
 #define DR_LOG_PATH     "/tmp/dataReader.log"
 #define DR_LOG_LEN      256
-#define TIMEOUT         5                   // DEBUG: CHANGE LATER
-#define EXIT_DELAY      35                  // DEBUG: Check if this is right for closing the server
+#define TIMEOUT         15
+#define EXIT_DELAY      35
+#define CLOSE_DELAY     EXIT_DELAY + 1      // Adds an extra second for accomodate process time
 #define MSG_DELAY       1.5
 
 // For Data Reader Output
@@ -25,5 +34,9 @@ void createLogMessage(DCInfo node, int logType, int index, int msgStatus);
 void debugLog(const char* logMessage);
 
 // Semaphores
+DCInfo createClient(pid_t id);
+int setUpLogSemaphore(void);
+void closeLogSemaphore(int semId);
+
 extern struct sembuf acquire_operation;
 extern struct sembuf release_operation;

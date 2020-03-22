@@ -1,3 +1,11 @@
+/*
+*  FILE          : logger.c
+*  PROJECT       : Assignment #3
+*  PROGRAMMER    : Gabriel Gurgel & Michael Gordon
+*  FIRST VERSION : 2020-03-21
+*  DESCRIPTION   : Functions relating to File IO and logging
+*/
+
 #include "../inc/logger.h"
 
 
@@ -27,8 +35,8 @@ void getTime(char* output)
 //                  using a semaphore. Calls getTime() in order to get current
 //                  time for log file.
 //
-// PARAMETERS    : int pid -> process ID
-//                 int status -> status of machine
+// PARAMETERS    : char* logMessage -> Message that is going to be written to logfile
+//                 har* path -> Path to the logfile
 //
 //  RETURNS      : void
 void writeToLog(char* logMessage, char* path)
@@ -36,7 +44,7 @@ void writeToLog(char* logMessage, char* path)
   createFilePathIfNotExists();
 
   //calculate the current time
-  char time[50] = "";
+  char time[TIME_LEN] = "";
   getTime(time);
 
   //open file, write log entry, then close file
@@ -52,7 +60,7 @@ void writeToLog(char* logMessage, char* path)
 // DESCRIPTION   : this function creates a filepath if that filepath
 //               - filepath set in #defines of header file
 //
-// PARAMETERS    : char* path -> Path to the folder that will contain the log file
+// PARAMETERS    :  NADA 
 //
 //  RETURNS      : void
 void createFilePathIfNotExists()
