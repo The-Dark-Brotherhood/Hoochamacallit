@@ -27,5 +27,5 @@ int getQueueID(void);
 void createLogMessage(int pid, int status);
 
 //the following is defined in DataCreatorLogging.h
-//extern struct sembuf acquire_operation;
-//extern struct sembuf release_operation;
+extern struct sembuf acquire_operation;
+extern struct sembuf release_operation;
