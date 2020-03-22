@@ -25,7 +25,7 @@ void createLogMessage(int pid, int status)
   switch(status)
   {
     case 0:
-      strcpy(description, MSG_0;
+      strcpy(description, MSG_0);
       break;
     case 1:
       strcpy(description, MSG_1);

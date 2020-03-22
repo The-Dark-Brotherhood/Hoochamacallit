@@ -36,7 +36,7 @@
 
 // Structures
 //--> Message QUEUE
-typedef structss
+typedef struct
 {
   long msgType;
   pid_t clientId;
