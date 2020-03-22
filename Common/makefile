@@ -1,5 +1,6 @@
 #
-# this makefile will compile the objects for the Hoochamacallit system
+# this makefile will compile the objects required
+#	for the Hoochamacallit system
 #
 #==============================================
 

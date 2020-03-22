@@ -7,7 +7,7 @@
 ./bin:
 	cd dataReader    && make && cp ./bin/DataReader ../Common/bin
 	cd DataCorruptor && make && cp ./bin/DataCorruptor ../Common/bin
-	cd DataCreator   && make && cp ./bin/DataCreatorsss ../Common/bin
+	cd DataCreator   && make && cp ./bin/DataCreator ../Common/bin
 
 #
 # =======================================================
