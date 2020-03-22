@@ -5,6 +5,7 @@
 #==============================================
 
 ./bin:
+	cd Common   		 && make
 	cd dataReader    && make && cp ./bin/DataReader ../Common/bin
 	cd DataCorruptor && make && cp ./bin/DataCorruptor ../Common/bin
 	cd DataCreator   && make && cp ./bin/DataCreator ../Common/bin
@@ -32,3 +33,7 @@ clean:
 	rm -f ./DataCorruptor/obj/*.o
 	rm -f ./DataCorruptor/inc/*.h~
 	rm -f ./DataCorruptor/src/*.c~
+	rm -f ./Common/bin/*
+	rm -f ./Common/obj/*.o
+	rm -f ./Common/inc/*.h~
+	rm -f ./Common/src/*.c~
