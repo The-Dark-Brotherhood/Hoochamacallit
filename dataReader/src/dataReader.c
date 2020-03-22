@@ -74,13 +74,14 @@ int main(int argc, char const *argv[])
 
   msgData msg;
   int msgSize = sizeof(msgData) - sizeof(long);
+  int retcode = 0;
 
   time_t startTime = time(NULL); // Listen for messages loop
   while((int)difftime(time(NULL), startTime) < CLOSE_DELAY)
   {
     // Process messages if received AND if it is able to add client or it already exists in shList
     if(msgrcv(msgID, &msg, msgSize, 0, IPC_NOWAIT) != -1 &&
-      insertNodeToList(shList, createClient(msg.clientId)))
+      (retCode = insertNodeToList(shList, createClient(msg.clientId))))
     {
       // I dont error check findClient because the check above already guarantees
       // that a client with that Id exists
@@ -92,9 +93,9 @@ int main(int argc, char const *argv[])
         deleteNode(shList, currentClient);
         createLogMessage(shList->dc[currentClient], GO_OFFLINE, currentClient, 0);
       }
-      else                                 // Log message
+      else if(retCode == 2)               // Log message
       {
-        createLogMessage(shList->dc[shList->numberOfDCs], MESSAGE, shList->numberOfDCs, msg.msgStatus);
+        createLogMessage(shList->dc[shList->numberOfDCs], MESSAGE, currentClient, msg.msgStatus);
       }
 
       // Delay and reset time since last message
