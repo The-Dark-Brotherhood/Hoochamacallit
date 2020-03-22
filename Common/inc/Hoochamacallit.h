@@ -30,7 +30,6 @@
 #define SHM_KEYID       16535
 #define EXIT_CODE       6
 #define KEY             1337
-#define MESSAGE_LENGTH  100
 #define MACHINE_ON      1
 #define EVERYTHING_OKAY 0
 #define MIN_SLEEP       10
