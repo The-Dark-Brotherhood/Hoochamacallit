@@ -25,6 +25,7 @@
 
 // Function Prototypes
 void checkInactivity(MasterList* list);
+DCInfo createClient(pid_t id);
 void deleteNode(MasterList* list, int index);
 int insertNodeToList(MasterList* list, DCInfo client);
 int findClient(MasterList* list, pid_t id);
@@ -34,7 +35,6 @@ void createLogMessage(DCInfo node, int logType, int index, int msgStatus);
 void debugLog(const char* logMessage);
 
 // Semaphores
-DCInfo createClient(pid_t id);
 int setUpLogSemaphore(void);
 void closeLogSemaphore(int semId);
 

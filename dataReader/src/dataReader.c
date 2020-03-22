@@ -10,8 +10,6 @@
 
 #include "../inc/dataReader.h"
 
-// DEBUG: REMOVE ALL PRINTF
-// DEBUG: REMOVE THE DEBUGGER FLAG
 
 struct sembuf acquire_operation = { 0, -1, SEM_UNDO };
 struct sembuf release_operation = { 0, 1, SEM_UNDO };
@@ -19,6 +17,8 @@ unsigned short init_values[1] = { 1 };
 
 int main(int argc, char const *argv[])
 {
+  int semId = setUpLogSemaphore();
+
   // MESSAGE QUEUE;
   // Generate key
   key_t msgKey = ftok(KEY_PATH, 'G');
@@ -41,7 +41,6 @@ int main(int argc, char const *argv[])
       return errno;
     }
   }
-  printf("DEBUG MESSAGE ID: %d\n", msgID );
 
   // MASTER LIST;
   // Generattes key
@@ -65,7 +64,6 @@ int main(int argc, char const *argv[])
       return errno;
     }
   }
-  printf("DEBUG SHM ID: %d\n", shmID);
 
   //--> Listening loop
   shList = (MasterList*)shmat (shmID, NULL, 0);       // Grabs the shared memory and
@@ -110,6 +108,7 @@ int main(int argc, char const *argv[])
   msgctl (msgID, IPC_RMID, (struct msqid_ds*)NULL);
   shmdt(shList);
   shmctl(shmID, IPC_RMID, 0);
+  closeLogSemaphore(semId);
 
   return 0;
 }
@@ -126,7 +125,7 @@ int setUpLogSemaphore(void)
   int semid = semget (KEY, 1, IPC_CREAT | 0777);
   if (semctl (semid, 0, SETALL, init_values) == -1)
   {
-    printf("error\n");
+    debugLog("Error setting up the Semephore\n");
   }
   return semid;
 }
@@ -139,5 +138,5 @@ int setUpLogSemaphore(void)
 //  RETURNS      : none
 void closeLogSemaphore(int semId)
 {
-  semctl (semId, 0, IPC_RMID, 0);
+  semctl(semId, 0, IPC_RMID, 0);
 }
