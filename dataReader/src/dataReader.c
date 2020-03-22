@@ -81,7 +81,7 @@ int main(int argc, char const *argv[])
   {
     // Process messages if received AND if it is able to add client or it already exists in shList
     if(msgrcv(msgID, &msg, msgSize, 0, IPC_NOWAIT) != -1 &&
-      (retCode = insertNodeToList(shList, createClient(msg.clientId))))
+      (retcode = insertNodeToList(shList, createClient(msg.clientId))))
     {
       // I dont error check findClient because the check above already guarantees
       // that a client with that Id exists
@@ -90,12 +90,12 @@ int main(int argc, char const *argv[])
 
       if(msg.msgStatus == EXIT_CODE)        // Remove client
       {
-        deleteNode(shList, currentClient);
         createLogMessage(shList->dc[currentClient], GO_OFFLINE, currentClient, 0);
+        deleteNode(shList, currentClient);
       }
-      else if(retCode == 2)               // Log message
+      else if(retcode == 2)               // Log message
       {
-        createLogMessage(shList->dc[shList->numberOfDCs], MESSAGE, currentClient, msg.msgStatus);
+        createLogMessage(shList->dc[currentClient], MESSAGE, currentClient, msg.msgStatus);
       }
 
       // Delay and reset time since last message

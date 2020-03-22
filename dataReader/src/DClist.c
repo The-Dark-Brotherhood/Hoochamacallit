@@ -103,7 +103,8 @@ void checkInactivity(MasterList* list)
       {
         list->dc[counter] = list->dc[lastIndex];
       }
-      deleteNode(list, lastIndex);
+      list->dc[index].dcProcessID = 0;
+      list->numberOfDCs--;
 		}
     else
     {
@@ -111,6 +112,7 @@ void checkInactivity(MasterList* list)
     }
 	}
 }
+
 
 
 // FUNCTION      : deleteNode
@@ -124,7 +126,9 @@ void checkInactivity(MasterList* list)
 //	void
 void deleteNode(MasterList* list, int index)
 {
-  list->dc[index].dcProcessID = 0;
-  list->dc[index].lastTimeHeardFrom = 0;
+  int lastIndex = list->numberOfDCs - 1;
+  list->dc[index] = list->dc[lastIndex];
+
+  list->dc[lastIndex].dcProcessID = 0;
   list->numberOfDCs--;
 }
