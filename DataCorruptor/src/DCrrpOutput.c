@@ -25,9 +25,13 @@ void writeDCKillToLog(int wodAction, int success, int id, int DCNum)
 {
   char logMessage[DCRRP_LOG_LEN] = "";
 
-  if(success)
+  if(success == 1)
   {
     sprintf(logMessage, "WOD Action %d - DC-%02d [%d] TERMINATED\n", wodAction, DCNum, id);
+  }
+  else if(success == -1)
+  {
+    sprintf(logMessage, "WOD Action %d - DC-%02d FAILED - Process does not exist -- Already TERMINATED\n", wodAction, DCNum);
   }
   else
   {

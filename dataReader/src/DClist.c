@@ -96,14 +96,14 @@ void checkInactivity(MasterList* list)
 	{
 		if((int)difftime(time(NULL), list->dc[counter].lastTimeHeardFrom) >= EXIT_DELAY)
 		{
-      createLogMessage(list->dc[counter], NON_RESPONSIVE, counter, 0);
 			// Replace the deleted object with last element
       int lastIndex = list->numberOfDCs - 1;
       if(lastIndex != counter)
       {
         list->dc[counter] = list->dc[lastIndex];
       }
-      list->dc[counter].dcProcessID = 0;
+
+      createLogMessage(list->dc[counter], NON_RESPONSIVE, counter, 0);
       list->numberOfDCs--;
 		}
     else
@@ -128,7 +128,5 @@ void deleteNode(MasterList* list, int index)
 {
   int lastIndex = list->numberOfDCs - 1;
   list->dc[index] = list->dc[lastIndex];
-
-  list->dc[lastIndex].dcProcessID = 0;
   list->numberOfDCs--;
 }

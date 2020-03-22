@@ -98,7 +98,7 @@ void machineProcessingLoop(int msgQueueID)
   while(running)
   {
     //sleep random amount of time
-    sleep((rand() % (MAX_SLEEP + 1)) + MIN_SLEEP); //sleep between 10 & 30 seconds
+    sleep((rand() % (MAX_SLEEP - SLEEP_OFFSET)) + MIN_SLEEP); //sleep between 10 & 30 seconds
 
     //generate random value between 0 & 6
     int machineStatus = (rand() % (MAX_STATUSES + 1));

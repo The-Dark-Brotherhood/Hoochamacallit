@@ -34,6 +34,7 @@
 #define EVERYTHING_OKAY 0
 #define MIN_SLEEP       10
 #define MAX_SLEEP       30
+#define SLEEP_OFFSET    9
 
 // Structures
 //--> Message QUEUE

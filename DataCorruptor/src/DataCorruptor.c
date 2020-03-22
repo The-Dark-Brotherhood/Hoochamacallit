@@ -152,7 +152,7 @@ int killTheThing(MasterList* list, int index)
     }
     else
     {
-      // Client already dead - failed to kill
+      retCode = -2;
     }
 
   return retCode;
@@ -243,10 +243,14 @@ int executeAction(MasterList* list, int action)
     }
     int retCode = killTheThing(list,dcNumber - 1);//-1 to match zero based index
     int successfulKill = 0;
-    if(retCode <= 0)
+    if(retCode == -1)
     {
       //failed to delete
       successfulKill = 0;
+    }
+    else if(retCode == -2)
+    {
+      successfulKill = -1;
     }
     else
     {
