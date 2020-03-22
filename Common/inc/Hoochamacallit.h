@@ -36,7 +36,7 @@
 
 // Structures
 //--> Message QUEUE
-typedef struct
+typedef structss
 {
   long msgType;
   pid_t clientId;
@@ -57,3 +57,15 @@ typedef struct
   int numberOfDCs;
   DCInfo dc[MAX_DC_ROLES];
 } MasterList;
+
+// Messages
+#define MSG_LEN   40
+#define NUM_MSG   8
+#define MSG_ERROR "ERROR READING STATUS"
+#define MSG_0     "Everything is OKAY"
+#define MSG_1     "Hydraulic Pressure Failure"
+#define MSG_2     "Safety Button Failure"
+#define MSG_3     "No Raw Material in the Process"
+#define MSG_4     "Operating Temperature Out of Range"
+#define MSG_5     "Operator Error"
+#define MSG_6     "Machine is Off-line"

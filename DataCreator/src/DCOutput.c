@@ -25,29 +25,29 @@ void createLogMessage(int pid, int status)
   switch(status)
   {
     case 0:
-      strcpy(description, "Everything is OKAY");
+      strcpy(description, MSG_0;
       break;
     case 1:
-      strcpy(description, "Hydraulic Pressure Failure");
+      strcpy(description, MSG_1);
       break;
     case 2:
-      strcpy(description, "Safety Button Failure");
+      strcpy(description, MSG_2);
       break;
     case 3:
-      strcpy(description, "No Raw Material in the Process");
+      strcpy(description, MSG_3);
       break;
     case 4:
-      strcpy(description, "Operating Temperature Out of Range");
+      strcpy(description, MSG_4);
       break;
     case 5:
-      strcpy(description, "Operator Error");
+      strcpy(description, MSG_5);
       break;
     case 6:
-      strcpy(description, "Machine is Off-line");
+      strcpy(description, MSG_6);
       break;
     default:
       // There should only be a value between 0-6
-      strcpy(description, "ERROR READING STATUS");
+      strcpy(description, MSG_ERROR);
       break;
   }
 

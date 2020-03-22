@@ -8,6 +8,12 @@
 
 #include "../inc/dataReader.h"
 
+// Message Status -->> Message
+char messages[NUM_MSG][MSG_LEN] =
+{
+  {MSG_0}, {MSG_1}, {MSG_2}, {MSG_3}, {MSG_4}, {MSG_5}, {MSG_6}, {MSG_ERROR}
+}
+
 // FUNCTION      : debugLog
 // DESCRIPTION   : Writes the string in the log file
 //
@@ -43,7 +49,7 @@ void createLogMessage(DCInfo client, int logType, int index, int msgStatus)
 			sprintf(logMessage,"DC-%02d [%d] added to the master list – NEW DC – Status 0 (Everything is OKAY)", index, node.dcProcessID);
 			break;
     case MESSAGE:
-      sprintf(logMessage, "DC-%02d [%d] updated in the master list – MSG RECEIVED – Status %d (AAAAA)\n", index, node.dcProcessID, msgStatus);
+      sprintf(logMessage, "DC-%02d [%d] updated in the master list – MSG RECEIVED – Status %d (%s)\n", index, node.dcProcessID, msgStatus, messages[msgStatus]);
       break;
     case NON_RESPONSIVE:
       sprintf(logMessage, "DC-%02d [%d] removed from master list – NON-RESPONSIVE\n", index, node.dcProcessID);
