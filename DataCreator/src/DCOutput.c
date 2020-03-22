@@ -12,7 +12,6 @@
 
 #include "../inc/DataCreator.h"
 
-// DEBUG: Should this be here?
 struct sembuf acquire_operation = { 0, -1, SEM_UNDO };
 struct sembuf release_operation = { 0, 1, SEM_UNDO };
 
@@ -33,7 +32,7 @@ void createLogMessage(int pid, int status)
   int semid = semget (KEY, 1, IPC_CREAT | 0777);
 
   // Get the description of the status - values 0-6
-  char description[DC_LOG_LEN] = "";
+  char description[MSG_LEN] = "";
   switch(status)
   {
     case 0:
@@ -63,21 +62,25 @@ void createLogMessage(int pid, int status)
       break;
   }
 
+  char logMessage[DC_LOG_LEN] = "";
+  
   //Check semaphore to see if can access critical region
   if (semop (semid, &acquire_operation, 1) == -1)
 	{
-	   //Critical ERROR
+	   sprintf(logMessage, "DC: Error setting up semaphore");
+     writeToLog(logMessage, DC_LOG_PATH);
 	}
   //Start of critical region
 
   // Write to logfile
-  sprintf(description, "DC [%d] - MSG SENT - Status %d (%s)\n", pid, status, description);
-  writeToLog(description, DC_LOG_PATH);
+  sprintf(logMessage, "DC [%d] - MSG SENT - Status %d (%s)\n", pid, status, description);
+  writeToLog(logMessage, DC_LOG_PATH);
 
   //End of critical region
   if (semop (semid, &release_operation, 1) == -1)
   {
-    //Critical ERROR
+    sprintf(logMessage, "DC: Error releasing semaphore");
+    writeToLog(logMessage, DC_LOG_PATH);
   }
 }
 
